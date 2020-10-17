@@ -20,7 +20,7 @@ def extract_int(df:pd.DataFrame, colms:list):
 
 class preprocess:
     def __init__(self, operations, fitted_ohe_dict:dict, scale=True):
-        from apl.ohe import ohe_transformer
+        from apl.prep.ohe import ohe_transformer
         self.operations = operations
         self.ohe = ohe_transformer(fitted_ohe_dict)
         self.scale = scale
