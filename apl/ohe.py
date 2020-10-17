@@ -7,7 +7,7 @@ def fitted_ohe(colms, df):
         ohe[colm] = OneHotEncoder().fit(df[[colm]])
     return ohe
 
-class transform:
+class ohe_transformer:
     def __init__(self, ohe):
         self.ohe = ohe
 

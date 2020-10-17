@@ -19,6 +19,27 @@ def extract_int(df:pd.DataFrame, colms:list):
     tsf_df[colms] = tsf_df[colms].astype(int)
     return tsf_df
 
+
+class preprocess:
+    def __init__(self, operations, fitted_ohe_dict:dict):
+        self.operations = operations
+        self.ohe = ohe_transformer(fitted_ohe_dict)
+
+    def fit(self, x, y=None):
+        colms = self.operations['standardise']
+        x = x.loc[data.Failure==0, colms]
+        self.scaler = StandardScaler().fit(x)
+
+    def transform(self, x, y=None):
+        colms = self.operations['extract_int']
+        extract = extract_int(x, colms)
+
+        encoded = self.ohe.transform(x)
+
+        colms = self.operations['standardise']
+        scaled = self.scaler.transform(x[colms])
+        scaled = pd.DataFrame(scaled, columns=colms)
+
 operations = {
 'extract_int' : ['STATION_ID', 'MACHINEID',
                  'MACHINEID_TESTER', 'MODULE2_FACTORY',
@@ -34,29 +55,16 @@ operations = {
                  'MODULE2_X3', 'MODULE2_X4',
                  'MODULE2_X5', 'MODULE3_SUBMOD1',]   }
 
-# if __name__=='__main__':
-df = read_data()
-df.drop_duplicates(inplace=True)
-df = df[xcolms+[ycolm]]
 
-data = sample(df, ycolm, 3, random_state=1234)
-
-colms = operations['extract_int']
-ts = extract_int(data, colms)
+if __name__=='__main__':
+    from apl.ohe import fitted_ohe, ohe_transformer
+    from sklearn.preprocessing import StandardScaler
 
 
-from apl.ohe import fitted_ohe, transform
-# fit ohe over all data
-ohe = fitted_ohe(operations['oneHotEncode'], df)
+    df = read_data()
+    df.drop_duplicates(inplace=True)
+    df = df[xcolms+[ycolm]]
+    # fit ohe over all data
+    ohe = fitted_ohe(operations['oneHotEncode'], df)
 
-t = transform(ohe)
-encoded = t.transform(data)
-
-
-
-from sklearn.preprocessing import StandardScaler
-colms = operations['standardise']
-x = data.loc[data.Failure==0, colms]
-scaler = StandardScaler().fit(x)
-scaled = scaler.transform(data[colms])
-scaled = pd.DataFrame(scaled, columns=colms)
+    data = sample(df, ycolm, 3, random_state=1234)
