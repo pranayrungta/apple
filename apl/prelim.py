@@ -31,29 +31,29 @@ remove = [
 ycolm = 'Failure'
 
 xcolms = [
- 'PRODUCT', #categorical
- 'STATION_ID',#categorical
- 'MACHINEID',#categorical
- 'MACHINEID_TESTER',#categorical
- 'LINE_ID',#categorical
+ 'PRODUCT', #categorical -> 4
+ 'STATION_ID',# extract int -> 97
+ 'MACHINEID',# extract int -> 80
+ 'MACHINEID_TESTER',# extract int -> 172
+ 'LINE_ID',#categorical -> 35
 
- 'MODULE1_Vendor',#categorical
+ 'MODULE1_Vendor',#categorical -> 3
 
- 'MODULE2_Vendor',#categorical
- 'MODULE2_CODE',#categorical
- 'MODULE2_FACTORY',# extract int
- 'MODULE2_X1', # int
- 'MODULE2_X2', # int
- 'MODULE2_X3', # int
- 'MODULE2_X4', # int
- 'MODULE2_X5', # int
- 'MODULE2_BUILD', # extract int
+ 'MODULE2_Vendor',#categorical -> 10
+ 'MODULE2_CODE',#categorical -> 4
+ 'MODULE2_FACTORY',# extract int -> 10
+ 'MODULE2_X1', # int -> 42
+ 'MODULE2_X2', # int -> 19
+ 'MODULE2_X3', # int -> 24
+ 'MODULE2_X4', # int -> 56
+ 'MODULE2_X5', # int -> 24
+ 'MODULE2_BUILD', # extract int -> 9
 
- 'MODULE3_Vendor',#categorical
+ 'MODULE3_Vendor',#categorical -> 3
  'MODULE3_TOOL', # extract int
- 'MODULE3_SUBMOD1', # int
- 'MODULE3_SUBMOD2', # extract int
+ 'MODULE3_SUBMOD1', # int -> 2
+ 'MODULE3_SUBMOD2', # extract int -> 103
  'MODULE3_SUBMOD2_Config',#categorical
- 'MODULE3_PHASE',#categorical
- 'MODULE3_CTool' # extract int
+ 'MODULE3_PHASE',#categorical -> 5
+ 'MODULE3_CTool' # extract int -> 113
  ]
