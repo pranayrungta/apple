@@ -21,24 +21,40 @@ def extract_int(df:pd.DataFrame, colms:list):
 
 
 class preprocess:
-    def __init__(self, operations, fitted_ohe_dict:dict):
+    def __init__(self, operations, fitted_ohe_dict:dict, scale=True):
         self.operations = operations
         self.ohe = ohe_transformer(fitted_ohe_dict)
+        self.scale = scale
 
     def fit(self, x, y=None):
+        print('fitting...')
+        colms = self.operations['extract_int']
+        selected = x.loc[data.Failure==0, colms]
+        extract = extract_int(selected, colms)
+        self.int_scaler = StandardScaler().fit(extract)
+
         colms = self.operations['standardise']
-        x = x.loc[data.Failure==0, colms]
-        self.scaler = StandardScaler().fit(x)
+        selected = x.loc[data.Failure==0, colms]
+        self.scaler = StandardScaler().fit(selected)
+        return self
 
     def transform(self, x, y=None):
+        print('transforming...')
         colms = self.operations['extract_int']
         extract = extract_int(x, colms)
+        if self.scale:
+            extract = self.int_scaler.transform(extract)
+            extract = pd.DataFrame(extract, columns=colms)
 
         encoded = self.ohe.transform(x)
 
         colms = self.operations['standardise']
-        scaled = self.scaler.transform(x[colms])
-        scaled = pd.DataFrame(scaled, columns=colms)
+        other = x[colms]
+        if self.scale:
+            other = self.scaler.transform(other)
+            other = pd.DataFrame(other, columns=colms)
+        ans = pd.concat([extract, encoded, other], axis=1)
+        return ans
 
 operations = {
 'extract_int' : ['STATION_ID', 'MACHINEID',
@@ -68,3 +84,7 @@ if __name__=='__main__':
     ohe = fitted_ohe(operations['oneHotEncode'], df)
 
     data = sample(df, ycolm, 3, random_state=1234)
+    x,y = data, data[['Failure']]
+    p = preprocess(operations, ohe, scale=False)
+    p.fit(x,y)
+    x = p.transform(x,y)
