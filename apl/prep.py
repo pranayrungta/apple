@@ -1,6 +1,4 @@
 import pandas as pd
-from apl.data import read_data
-from apl.prelim import xcolms, ycolm
 
 def sample(df, ycolm='Failure', n:int=3, **kwargs):
     nve = df[df[ycolm]==0]
@@ -22,19 +20,21 @@ def extract_int(df:pd.DataFrame, colms:list):
 
 class preprocess:
     def __init__(self, operations, fitted_ohe_dict:dict, scale=True):
+        from apl.ohe import ohe_transformer
         self.operations = operations
         self.ohe = ohe_transformer(fitted_ohe_dict)
         self.scale = scale
 
     def fit(self, x, y=None):
         print('fitting...')
+        from sklearn.preprocessing import StandardScaler
         colms = self.operations['extract_int']
-        selected = x.loc[data.Failure==0, colms]
+        selected = x.loc[x.Failure==0, colms]
         extract = extract_int(selected, colms)
         self.int_scaler = StandardScaler().fit(extract)
 
         colms = self.operations['standardise']
-        selected = x.loc[data.Failure==0, colms]
+        selected = x.loc[x.Failure==0, colms]
         self.scaler = StandardScaler().fit(selected)
         return self
 
@@ -70,21 +70,3 @@ operations = {
 'standardise': [ 'MODULE2_X1', 'MODULE2_X2',
                  'MODULE2_X3', 'MODULE2_X4',
                  'MODULE2_X5', 'MODULE3_SUBMOD1',]   }
-
-
-if __name__=='__main__':
-    from apl.ohe import fitted_ohe, ohe_transformer
-    from sklearn.preprocessing import StandardScaler
-
-
-    df = read_data()
-    df.drop_duplicates(inplace=True)
-    df = df[xcolms+[ycolm]]
-    # fit ohe over all data
-    ohe = fitted_ohe(operations['oneHotEncode'], df)
-
-    data = sample(df, ycolm, 3, random_state=1234)
-    x,y = data, data[['Failure']]
-    p = preprocess(operations, ohe, scale=False)
-    p.fit(x,y)
-    x = p.transform(x,y)
