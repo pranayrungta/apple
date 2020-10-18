@@ -1,15 +1,13 @@
 from apl.data import read_data
-from apl.prep.ohe import fitted_ohe
 from apl.prep.prelim import xcolms, ycolm
-from apl.prep.prep import preprocess, operations, sample
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LogisticRegression
 import numpy as np
 import pandas as pd
 
 
 def get_data():
     from sklearn.model_selection import train_test_split
+    from apl.prep.prep import sample
     df = read_data()
     df.drop_duplicates(inplace=True)
     df = df[xcolms+[ycolm]]
@@ -62,20 +60,11 @@ def bias_variance(clf, xtrain, ytrain):
     df = pd.DataFrame(search.cv_results_)
     df = df[['param_C', 'mean_train_score', 'mean_test_score']]
     plt.figure(figsize=(12,6))
-    plt.xlabel('param_C')
+    plt.xlabel(r'regularization parameter ($\lambda$)')
     plt.ylabel('error')
-    px, py = df['param_C'], df['mean_train_score']
+    px, py = 1/df['param_C'], df['mean_train_score']
     plt.plot(px,py, 'o-', label='train')
-    px, py = df['param_C'], df['mean_test_score']
+    px, py = 1/df['param_C'], df['mean_test_score']
     plt.plot(px,py, 'o-', label='test')
     plt.xscale('log')
     plt.legend();
-
-df, xtrain, xtest, ytrain, ytest = get_data()
-# fit ohe over all data
-ohe = fitted_ohe(operations['oneHotEncode'], df)
-preprocessor = preprocess(operations, ohe, scale=True)
-xtrain = preprocessor.fit_transform(xtrain)
-clf = LogisticRegression(penalty='l1', solver='liblinear')
-plot_learning_curve(clf, xtrain, ytrain) # Thus, no need of more data
-bias_variance(clf, xtrain, ytrain)
