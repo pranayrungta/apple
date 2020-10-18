@@ -17,8 +17,8 @@ def extract_int(df:pd.DataFrame, colms:list):
     tsf_df[colms] = tsf_df[colms].astype(int)
     return tsf_df
 
-
-class preprocess:
+from sklearn.base import BaseEstimator, TransformerMixin
+class preprocess(BaseEstimator, TransformerMixin):
     def __init__(self, operations, fitted_ohe_dict:dict, scale=True):
         from apl.prep.ohe import ohe_transformer
         self.operations = operations
