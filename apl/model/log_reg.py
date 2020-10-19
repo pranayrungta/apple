@@ -1,13 +1,13 @@
-from apl.data import read_data
-from apl.prep.prelim import xcolms, ycolm
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
 
 def get_data():
-    from sklearn.model_selection import train_test_split
+    from apl.data import read_data
+    from apl.prep.prelim import xcolms, ycolm
     from apl.prep.prep import sample
+    from sklearn.model_selection import train_test_split
     df = read_data()
     df.drop_duplicates(inplace=True)
     df = df[xcolms+[ycolm]]
